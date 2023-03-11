@@ -15,7 +15,7 @@ pipeline {
         }
         stage("deploy") {
             steps {
-                echo "Deploying the Chart"
+                echo "Deploying the Chart ...  Maybe this time?"
             }
         }
     }   
