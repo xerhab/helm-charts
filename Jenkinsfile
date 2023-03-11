@@ -2,8 +2,6 @@ def gv
 
 pipeline {
     agent any
-    parameters {
-    }
     stages {
         stage("build image") {
             steps {
