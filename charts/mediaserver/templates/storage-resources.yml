@@ -10,7 +10,7 @@ spec:
   resources:
     requests:
       storage: {{ .Values.general.storage.size }}
-  storageClassName: {{ if (kindIs "invalid" .Values.general.storage.pvcStorageClass) }}""{{- else }}{{ .Values.general.storage.pvcStorageClass | quote }}{{- end }}
+  storageClassName: {{ if (kindIs "invalid" .Values.general.storage.StorageClassName) }}""{{- else }}{{ .Values.general.storage.StorageClassName | quote }}{{- end }}
 {{- end }}
 {{- with .Values.sonarr.volume }}
 ---
