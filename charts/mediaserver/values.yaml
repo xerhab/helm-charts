@@ -15,7 +15,7 @@ general:
     customVolume: false  #set to true if not using a PVC (must provide volume below)
     pvcName: mediaserver-pvc
     size: 50Gi
-    pvcStorageClass: 
+    pvcStorageClass: "default"
     # the path starting from the top level of the pv you're passing. If your share is server.local/share/, then tv is server.local/share/media/tv
     subPaths:
       tv: media/tv
