@@ -10,12 +10,12 @@ pipeline {
         }
         stage("test") {
             steps {
-                echo "Testing the Images"
+                echo "Testing the Images... What Happens now?"
             }
         }
         stage("deploy") {
             steps {
-                echo "Deploying the Chart"
+                echo "Deploying the Chart ...  Maybe this time?"
             }
         }
     }   
