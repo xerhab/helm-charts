@@ -188,7 +188,7 @@ sabnzbd:
       enabled: false
       secretName: ""
   resources: {}
-  volume: {}
+  volume: 
    name: pvc-plex-config
    storageClassName: 
    annotations: {}
