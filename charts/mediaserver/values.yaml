@@ -41,7 +41,7 @@ plex:
   replicas: 1
   xplex:
     env:
-      advertiseIp: http://10.10.10.82:32400/
+      advertiseIp: "http://10.10.10.82:32400/"
       pgid: "1000"
       plexClaim: claim-bmWdpcyUGk-MyJ8hp4zR
       puid: "1000"
