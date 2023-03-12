@@ -4,3 +4,9 @@ description: A Helm chart for Kubernetes mediaserver
 name: k8s-mediaserver
 type: application
 version: 0.7.0
+# Add the tag field to specify the chart version
+# It should be the same as the version field
+# Note: The tag should be prefixed with "v"
+# and follow Semantic Versioning (https://semver.org/)
+tags:
+  - "v0.7.0"
