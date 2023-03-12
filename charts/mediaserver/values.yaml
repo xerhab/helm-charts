@@ -189,7 +189,7 @@ sabnzbd:
       secretName: ""
   resources: {}
   volume: 
-   name: pvc-plex-config
+   name: pvc-sabnzbd-config
    storageClassName: 
    annotations: {}
    labels: {}
