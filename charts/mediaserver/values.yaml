@@ -1,238 +1,120 @@
-# Default values for k8s-mediaserver.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-general:
-  ingress_host: k8s-mediaserver.k8s.test
-  plex_ingress_host: k8s-plex.k8s.test
-  image_tag: latest
-  #UID to run the process with
-  puid: 1000
-  #GID to run the process with
-  pgid: 1000
-  #Persistent storage selections and pathing
-  storage:
-    customVolume: false  #set to true if not using a PVC (must provide volume below)
-    pvcName: mediaserver-pvc
-    size: 5Gi
-    pvcStorageClass: ""
-    # the path starting from the top level of the pv you're passing. If your share is server.local/share/, then tv is server.local/share/media/tv
-    subPaths:
-      tv: media/tv
-      movies: media/movies
-      downloads: downloads
-      transmission: transmission
-      sabnzbd: sabnzbd
-      config: config
-    volumes: {}
-    #  hostPath:
-    #    path: /mnt/share
-  ingress:
-    ingressClassName: ""
-
-sonarr:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/sonarr
-    nodeSelector: {}
-    port: 8989
-  service:
-    type: ClusterIP
-    port: 8989
-    nodePort:
-    extraLBService: false
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /sonarr
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-    #name: pvc-sonarr-config
-    #storageClassName: longhorn
-    #annotations:
-    #  my-annotation/test: my-value
-    #labels:
-    #  my-label/test: my-other-value
-    #accessModes: ReadWriteOnce
-    #storage: 5Gi
-    #selector: {}
-
-radarr:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/radarr
-    nodeSelector: {}
-    port: 7878
-  service:
-    type: ClusterIP
-    port: 7878
-    nodePort:
-    extraLBService: false
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /radarr
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-    #name: pvc-radarr-config
-    #storageClassName: longhorn
-    #annotations: {}
-    #labels: {}
-    #accessModes: ReadWriteOnce
-    #storage: 5Gi
-    #selector: {}
-
-jackett:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/jackett
-    nodeSelector: {}
-    port: 9117
-  service:
-    type: ClusterIP
-    port: 9117
-    nodePort:
-    extraLBService: false
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /jackett
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-  #  name: pvc-jackett-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
-
-transmission:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/transmission
-    nodeSelector: {}
-    port:
-      utp: 9091
-      peer: 51413
-  service:
-    utp:
-      type: ClusterIP
-      port: 9091
-      nodePort:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-    peer:
-      type: ClusterIP
-      port: 51413
-      nodePort:
-      nodePortUDP:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /transmission
-    tls:
-      enabled: false
-      secretName: ""
-  config:
-    auth:
-      enabled: false
-      username: ""
-      password: ""
-  resources: {}
-  volume: {}
-  #  name: pvc-transmission-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
-
-sabnzbd:
-  enabled: true
-  container:
-    image: docker.io/linuxserver/sabnzbd
-    nodeSelector: {}
-    port:
-      http: 8080
-      https: 9090
-  service:
-    http:
-      type: ClusterIP
-      port: 8080
-      nodePort:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-    https:
-      type: ClusterIP
-      port: 9090
-      nodePort:
-      # Defines an additional LB service, requires cloud provider service or MetalLB
-      extraLBService: false
-  ingress:
-    enabled: true
-    annotations: {}
-    path: /sabnzbd
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  volume: {}
-  #  name: pvc-plex-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
-
+kubernetesClusterDomain: cluster.local
+lbPlex:
+  ports:
+  - name: "32400"
+    port: 32400
+    targetPort: 32400
+  - name: "3005"
+    port: 3005
+    targetPort: 3005
+  - name: "8324"
+    port: 8324
+    targetPort: 8324
+  - name: "32469"
+    port: 32469
+    targetPort: 32469
+  type: LoadBalancer
+lbPlexUdp:
+  ports:
+  - name: "1900"
+    port: 1900
+    protocol: UDP
+    targetPort: 1900
+  - name: "32410"
+    port: 32410
+    protocol: UDP
+    targetPort: 32410
+  - name: "32412"
+    port: 32412
+    protocol: UDP
+    targetPort: 32412
+  - name: "32413"
+    port: 32413
+    protocol: UDP
+    targetPort: 32413
+  - name: "32414"
+    port: 32414
+    protocol: UDP
+    targetPort: 32414
+  type: LoadBalancer
 plex:
-  enabled: true
-  claim: "CHANGEME"
-  replicaCount: 1
-  container:
-    image: docker.io/linuxserver/plex
-    nodeSelector: {}
-    port: 32400
-  service:
-    type: ClusterIP
-    port: 32400
-    nodePort:
-    # Defines an additional LB service, requires cloud provider service or MetalLB
-    extraLBService: false
-  ingress:
-    enabled: true
-    annotations: {}
-    tls:
-      enabled: false
-      secretName: ""
-  resources: {}
-  #  limits:
-  #    cpu: 100m
-  #    memory: 100Mi
-  #  requests:
-  #    cpu: 100m
-  #    memory: 100Mi
-  volume: {}
-  #  name: pvc-plex-config
-  #  storageClassName: longhorn
-  #  annotations: {}
-  #  labels: {}
-  #  accessModes: ReadWriteOnce
-  #  storage: 5Gi
-  #  selector: {}
+  replicas: 1
+  xplex:
+    env:
+      advertiseIp: http://10.10.10.82:32400/
+      pgid: "1000"
+      plexClaim: claim-bmWdpcyUGk-MyJ8hp4zR
+      puid: "1000"
+      tz: EST
+      version: docker
+    image:
+      repository: lscr.io/linuxserver/plex
+      tag: latest
+prowlarr:
+  ports:
+  - name: "9696"
+    port: 9696
+    targetPort: 9696
+  prowlarr:
+    env:
+      pgid: "1000"
+      puid: "1000"
+      tz: EST
+    image:
+      repository: lscr.io/linuxserver/prowlarr
+      tag: develop
+  replicas: 1
+  type: ClusterIP
+qbittorrent:
+  ports:
+  - name: "8080"
+    port: 8080
+    targetPort: 8080
+  - name: "6881"
+    port: 6881
+    targetPort: 6881
+  - name: 6881-udp
+    port: 6881
+    protocol: UDP
+    targetPort: 6881
+  qbittorrent:
+    env:
+      pgid: "1000"
+      puid: "1000"
+      tz: EST
+      webuiPort: "8080"
+    image:
+      repository: lscr.io/linuxserver/qbittorrent
+      tag: latest
+  replicas: 1
+  type: ClusterIP
+radarr:
+  ports:
+  - name: "7878"
+    port: 7878
+    targetPort: 7878
+  radarr:
+    env:
+      pgid: "1000"
+      puid: "1000"
+      tz: EST
+    image:
+      repository: lscr.io/linuxserver/radarr
+      tag: latest
+  replicas: 1
+  type: ClusterIP
+sonarr:
+  ports:
+  - name: ui
+    port: 8989
+    targetPort: 8989
+  replicas: 1
+  sonarr:
+    env:
+      pgid: "1000"
+      puid: "1000"
+      tz: EST
+    image:
+      repository: lscr.io/linuxserver/sonarr
+      tag: latest
+  type: ClusterIP

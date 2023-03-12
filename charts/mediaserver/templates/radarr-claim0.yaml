@@ -1,0 +1,14 @@
+apiVersion: 
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "mediaserver.fullname" . }}-radarr-claim0
+  labels:
+    io.kompose.service: radarr-claim0
+  {{- include "mediaserver.labels" . | nindent 4 }}
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 10Gi
+status: {}

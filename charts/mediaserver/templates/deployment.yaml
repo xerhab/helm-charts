@@ -1,61 +1,292 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "MediaServer.fullname" . }}
+  name: {{ include "mediaserver.fullname" . }}-plex
   labels:
-    {{- include "MediaServer.labels" . | nindent 4 }}
+    io.kompose.service: plex
+  {{- include "mediaserver.labels" . | nindent 4 }}
 spec:
-  {{- if not .Values.autoscaling.enabled }}
-  replicas: {{ .Values.replicaCount }}
-  {{- end }}
+  replicas: {{ .Values.plex.replicas }}
   selector:
     matchLabels:
-      {{- include "MediaServer.selectorLabels" . | nindent 6 }}
+      io.kompose.service: plex
+    {{- include "mediaserver.selectorLabels" . | nindent 6 }}
   template:
     metadata:
-      {{- with .Values.podAnnotations }}
-      annotations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
       labels:
-        {{- include "MediaServer.selectorLabels" . | nindent 8 }}
+        io.kompose.service: plex
+      {{- include "mediaserver.selectorLabels" . | nindent 8 }}
     spec:
-      {{- with .Values.imagePullSecrets }}
-      imagePullSecrets:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      serviceAccountName: {{ include "MediaServer.serviceAccountName" . }}
-      securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          ports:
-            - name: http
-              containerPort: 80
-              protocol: TCP
-          livenessProbe:
-            httpGet:
-              path: /
-              port: http
-          readinessProbe:
-            httpGet:
-              path: /
-              port: http
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
-      {{- with .Values.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+      - env:
+        - name: PGID
+          value: {{ .Values.plex.xplex.env.pgid }}
+        - name: PLEX_CLAIM
+          value: {{ .Values.plex.xplex.env.plexClaim }}
+        - name: PUID
+          value: {{ .Values.plex.xplex.env.puid }}
+        - name: VERSION
+          value: {{ .Values.plex.xplex.env.version }}
+        - name: TZ
+          value: {{ .Values.plex.xplex.env.tz }}
+        - name: ADVERTISE_IP
+          value: {{ .Values.plex.xplex.env.advertiseIp }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.plex.xplex.image.repository }}:{{ .Values.plex.xplex.image.tag
+          | default .Chart.AppVersion }}
+        name: xplex
+        ports:
+        - containerPort: 32400
+        - containerPort: 3005
+        - containerPort: 8324
+        - containerPort: 32469
+        - containerPort: 1900
+          protocol: UDP
+        - containerPort: 32410
+          protocol: UDP
+        - containerPort: 32412
+          protocol: UDP
+        - containerPort: 32413
+          protocol: UDP
+        - containerPort: 32414
+          protocol: UDP
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: plex-claim0
+        - mountPath: /media
+          name: media
+        - mountPath: /backups
+          name: backups
+      restartPolicy: Always
+      volumes:
+      - name: plex-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "mediaserver.fullname" . }}-plex-claim0
+      - name: media
+        persistentVolumeClaim:
+          claimName: media
+      - name: backups
+        persistentVolumeClaim:
+          claimName: backups
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mediaserver.fullname" . }}-prowlarr
+  labels:
+    io.kompose.service: prowlarr
+  {{- include "mediaserver.labels" . | nindent 4 }}
+  annotations:
+    kompose.version: 1.26.1 (a9d05d509)
+spec:
+  replicas: {{ .Values.prowlarr.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: prowlarr
+    {{- include "mediaserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: prowlarr
+      {{- include "mediaserver.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.version: 1.26.1 (a9d05d509)
+    spec:
+      containers:
+      - env:
+        - name: PGID
+          value: {{ .Values.prowlarr.prowlarr.env.pgid }}
+        - name: PUID
+          value: {{ .Values.prowlarr.prowlarr.env.puid }}
+        - name: TZ
+          value: {{ .Values.prowlarr.prowlarr.env.tz }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.prowlarr.prowlarr.image.repository }}:{{ .Values.prowlarr.prowlarr.image.tag
+          | default .Chart.AppVersion }}
+        name: prowlarr
+        ports:
+        - containerPort: 9696
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: prowlarr-claim0
+      restartPolicy: Always
+      volumes:
+      - name: prowlarr-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "mediaserver.fullname" . }}-prowlarr-claim0
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mediaserver.fullname" . }}-qbittorrent
+  labels:
+    io.kompose.service: qbittorrent
+  {{- include "mediaserver.labels" . | nindent 4 }}
+  annotations:
+    kompose.version: 1.26.1 (a9d05d509)
+spec:
+  replicas: {{ .Values.qbittorrent.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: qbittorrent
+    {{- include "mediaserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: qbittorrent
+      {{- include "mediaserver.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.version: 1.26.1 (a9d05d509)
+    spec:
+      containers:
+      - env:
+        - name: PGID
+          value: {{ .Values.qbittorrent.qbittorrent.env.pgid }}
+        - name: PUID
+          value: {{ .Values.qbittorrent.qbittorrent.env.puid }}
+        - name: TZ
+          value: {{ .Values.qbittorrent.qbittorrent.env.tz }}
+        - name: WEBUI_PORT
+          value: {{ .Values.qbittorrent.qbittorrent.env.webuiPort }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.qbittorrent.qbittorrent.image.repository }}:{{ .Values.qbittorrent.qbittorrent.image.tag
+          | default .Chart.AppVersion }}
+        name: qbittorrent
+        ports:
+        - containerPort: 8080
+        - containerPort: 6881
+        - containerPort: 6881
+          protocol: UDP
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: qbittorrent-claim0
+        - mountPath: /downloads
+          name: torrents
+      restartPolicy: Always
+      volumes:
+      - name: qbittorrent-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "mediaserver.fullname" . }}-qbittorrent-claim0
+      - name: torrents
+        persistentVolumeClaim:
+          claimName: torrents
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mediaserver.fullname" . }}-radarr
+  labels:
+    io.kompose.service: radarr
+  {{- include "mediaserver.labels" . | nindent 4 }}
+  annotations:
+    kompose.version: 1.26.1 (a9d05d509)
+spec:
+  replicas: {{ .Values.radarr.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: radarr
+    {{- include "mediaserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: radarr
+      {{- include "mediaserver.selectorLabels" . | nindent 8 }}
+      annotations:
+        kompose.version: 1.26.1 (a9d05d509)
+    spec:
+      containers:
+      - env:
+        - name: PGID
+          value: {{ .Values.radarr.radarr.env.pgid }}
+        - name: PUID
+          value: {{ .Values.radarr.radarr.env.puid }}
+        - name: TZ
+          value: {{ .Values.radarr.radarr.env.tz }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.radarr.radarr.image.repository }}:{{ .Values.radarr.radarr.image.tag
+          | default .Chart.AppVersion }}
+        name: radarr
+        ports:
+        - containerPort: 7878
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: radarr-claim0
+        - mountPath: /movies
+          name: media
+        - mountPath: /downloads
+          name: torrents
+      restartPolicy: Always
+      securityContext:
+        fsGroup: 2000
+      volumes:
+      - name: radarr-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "mediaserver.fullname" . }}-radarr-claim0
+      - name: media
+        persistentVolumeClaim:
+          claimName: media
+      - name: torrents
+        persistentVolumeClaim:
+          claimName: torrents
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "mediaserver.fullname" . }}-sonarr
+  labels:
+    io.kompose.service: sonarr
+  {{- include "mediaserver.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.sonarr.replicas }}
+  selector:
+    matchLabels:
+      io.kompose.service: sonarr
+    {{- include "mediaserver.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      labels:
+        io.kompose.service: sonarr
+      {{- include "mediaserver.selectorLabels" . | nindent 8 }}
+    spec:
+      containers:
+      - env:
+        - name: PGID
+          value: {{ .Values.sonarr.sonarr.env.pgid }}
+        - name: PUID
+          value: {{ .Values.sonarr.sonarr.env.puid }}
+        - name: TZ
+          value: {{ .Values.sonarr.sonarr.env.tz }}
+        - name: KUBERNETES_CLUSTER_DOMAIN
+          value: {{ .Values.kubernetesClusterDomain }}
+        image: {{ .Values.sonarr.sonarr.image.repository }}:{{ .Values.sonarr.sonarr.image.tag
+          | default .Chart.AppVersion }}
+        name: sonarr
+        ports:
+        - containerPort: 8989
+        resources: {}
+        volumeMounts:
+        - mountPath: /config
+          name: sonarr-claim0
+        - mountPath: /tv
+          name: media
+        - mountPath: /downloads
+          name: torrents
+      restartPolicy: Always
+      volumes:
+      - name: sonarr-claim0
+        persistentVolumeClaim:
+          claimName: {{ include "mediaserver.fullname" . }}-claim0
+      - name: media
+        persistentVolumeClaim:
+          claimName: media
+      - name: torrents
+        persistentVolumeClaim:
+          claimName: torrents
