@@ -18,7 +18,7 @@ jobs:
         run: helm repo update
 
       - name: Deploy to Kubernetes
-        uses: vimeda/helm@v1.6.8
+        uses: bym0/helm@v1.7.2
         with:
           chart: mediaserver
           repository: https://charts.xerktech.com
