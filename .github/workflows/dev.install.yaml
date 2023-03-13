@@ -1,33 +1,32 @@
-# name: Helm Install - Dev
+name: Helm Install - Dev
 
-# on:
-#   push:
-#     branches:
-#       - main
+on:
+  workflow_run:
+    types: [completed]
+    workflows: ["Release Charts"]
 
-# jobs:
-#   release:
-#     runs-on: ubuntu-latest
-#     steps:
-#       - name: Checkout
-#         uses: actions/checkout@v2
-#         with:
-#           ref: main
-      
-# #       - name: Add Helm repository
-# #         run: |
-# #           helm repo add xerhab https://charts.xerktech.com
-# #           helm repo update
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for 30 seconds
+        run: sleep 30
 
-#       - name: Deploy to Kubernetes
-#         uses: vimeda/helm@v1.6.8
-#         with:
-#           chart: xerhab/mediaserver
-#           repo: https://charts.xerktech.com
-#           repo-alias: xerhab
-#           namespace: dev
-#           release: mediaserver
-#           values: |
-#             $(cat ./dev.values.yaml)
-#         env:
-#           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: gh-pages
+
+      - name: Deploy to Kubernetes
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: xerhab/mediaserver
+#           chart-version: 0.7.6
+          repo: https://charts.xerktech.com
+          repo-alias: xerhab
+          namespace: dev
+          release: mediaserver
+          value-files: dev.values.yaml
+          task: upgrade
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
