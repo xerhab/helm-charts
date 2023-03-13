@@ -9,8 +9,8 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-#       - name: Wait for 30 seconds
-#         run: sleep 30
+      - name: Wait for 30 seconds
+        run: sleep 30
 
       - name: Checkout
         uses: actions/checkout@v2
