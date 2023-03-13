@@ -2,6 +2,16 @@ apiVersion: v1
 entries:
   mediaserver:
   - apiVersion: v2
+    appVersion: 1.16.7
+    created: "2023-03-13T13:01:09.777031393Z"
+    description: A Helm chart for Kubernetes mediaserver
+    digest: 86e8ce4d91844d2c9bac6de74b613e8c1106ce315ddeb29de8207a1a8a7a16ab
+    name: mediaserver
+    type: application
+    urls:
+    - https://github.com/xerhab/helm-charts/releases/download/mediaserver-0.7.7/mediaserver-0.7.7.tgz
+    version: 0.7.7
+  - apiVersion: v2
     appVersion: 1.16.6
     created: "2023-03-13T01:29:11.56545592Z"
     description: A Helm chart for Kubernetes mediaserver
@@ -91,4 +101,4 @@ entries:
     urls:
     - https://github.com/xerhab/helm-charts/releases/download/mediaserver-0.1.2/mediaserver-0.1.2.tgz
     version: 0.1.2
-generated: "2023-03-13T01:29:11.565499521Z"
+generated: "2023-03-13T13:01:09.777148794Z"
