@@ -20,7 +20,7 @@ jobs:
           chart: mediaserver
 #           repository: https://charts.xerktech.com
           namespace: dev
-          release: mediaserver-release
+#           release: mediaserver
           values: |
             $(cat ./dev.values.yaml)
         env:
