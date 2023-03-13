@@ -1,7 +1,7 @@
 apiVersion: v2
-appVersion: 1.16.6
+appVersion: 1.16.7
 description: A Helm chart for Kubernetes mediaserver
 name: mediaserver
 type: application
-version: 0.7.6
+version: 0.7.7
 tag: kubealex
