@@ -9,24 +9,36 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - name: Wait for 30 seconds
-        run: sleep 30
+#       - name: Wait for 30 seconds
+#         run: sleep 30
 
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: main
 
-      - name: Deploy to Kubernetes
+      - name: Remove from Kubernetes
         uses: vimeda/helm@v1.6.8
         with:
           chart: xerhab/mediaserver
-#           chart-version: 0.7.6
           repo: https://charts.xerktech.com
           repo-alias: xerhab
           namespace: dev
           release: mediaserver
           value-files: dev.values.yaml
-          task: upgrade
+          task: remove
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+      
+      - name: Deploy to Kubernetes
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: xerhab/mediaserver
+          repo: https://charts.xerktech.com
+          repo-alias: xerhab
+          namespace: dev
+          release: mediaserver
+          value-files: dev.values.yaml
+          task: install
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
