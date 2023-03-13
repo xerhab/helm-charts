@@ -23,7 +23,7 @@ jobs:
         uses: vimeda/helm@v1.6.8
         with:
           chart: xerhab/mediaserver
-          chart-version: latest
+          chart-version: 0.7.6
           repo: https://charts.xerktech.com
           repo-alias: xerhab
           namespace: dev
