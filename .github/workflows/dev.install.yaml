@@ -16,29 +16,42 @@ jobs:
         uses: actions/checkout@v2
         with:
           ref: main
+          
+      - name: Upgrade Kubernetes
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: xerhab/mediaserver
+          repo: https://charts.xerktech.com
+          repo-alias: xerhab
+          namespace: dev
+          release: mediaserver
+          value-files: dev.values.yaml
+          task: update
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
 
-      - name: Remove from Kubernetes
-        uses: vimeda/helm@v1.6.8
-        with:
-          chart: xerhab/mediaserver
-          repo: https://charts.xerktech.com
-          repo-alias: xerhab
-          namespace: dev
-          release: mediaserver
-          value-files: dev.values.yaml
-          task: remove
-        env:
-          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+#       - name: Remove from Kubernetes
+#         uses: vimeda/helm@v1.6.8
+#         with:
+#           chart: xerhab/mediaserver
+#           repo: https://charts.xerktech.com
+#           repo-alias: xerhab
+#           namespace: dev
+#           release: mediaserver
+#           value-files: dev.values.yaml
+#           task: remove
+#         env:
+#           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
       
-      - name: Deploy to Kubernetes
-        uses: vimeda/helm@v1.6.8
-        with:
-          chart: xerhab/mediaserver
-          repo: https://charts.xerktech.com
-          repo-alias: xerhab
-          namespace: dev
-          release: mediaserver
-          value-files: dev.values.yaml
-          task: install
-        env:
-          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+#       - name: Deploy to Kubernetes
+#         uses: vimeda/helm@v1.6.8
+#         with:
+#           chart: xerhab/mediaserver
+#           repo: https://charts.xerktech.com
+#           repo-alias: xerhab
+#           namespace: dev
+#           release: mediaserver
+#           value-files: dev.values.yaml
+#           task: install
+#         env:
+#           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
