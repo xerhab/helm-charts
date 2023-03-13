@@ -14,14 +14,14 @@ jobs:
         with:
           ref: gh-pages
 
-#       - name: Deploy to Kubernetes
-#         uses: deliverybot/helm@master
-#         with:
-#           chart: mediaserver
-#           repository: https://charts.xerktech.com
-#           namespace: dev
-#           release: mediaserver-release
-#           values: |
-#             $(cat ./dev.values.yaml)
-#         env:
-#           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
+      - name: Deploy to Kubernetes
+        uses: deliverybot/helm@master
+        with:
+          chart: mediaserver
+          repository: https://charts.xerktech.com
+          namespace: dev
+          release: mediaserver-release
+          values: |
+            $(cat ./dev.values.yaml)
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
