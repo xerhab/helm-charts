@@ -24,5 +24,6 @@ jobs:
           namespace: dev
           release: mediaserver
           value-files: dev.values.yaml
+          task: upgrade
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
