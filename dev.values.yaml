@@ -1,0 +1,207 @@
+general:
+  image_tag: latest
+  ingress:
+    ingressClassName: nginx
+  ingress_host: mediaserver.xerktech.com
+  pgid: 1000
+  plex_ingress_host: k8s-plex.xerktech.com
+  puid: 1000
+  storage:
+    StorageClassName: nfs-client
+    customVolume: false
+    pvcName: mediaserver-pvc
+    size: 50Gi
+    subPaths:
+      config: config
+      downloads: downloads
+      movies: media/movies
+      sabnzbd: sabnzbd
+      transmission: transmission
+      tv: media/tv
+    volumes: {}
+jackett:
+  container:
+    image: docker.io/linuxserver/jackett
+    nodeSelector: {}
+    port: 9117
+  enabled: false
+  ingress:
+    annotations: {}
+    enabled: true
+    path: /jackett
+    tls:
+      enabled: false
+      secretName: ''
+  resources: {}
+  service:
+    extraLBService: false
+    nodePort: null
+    port: 9117
+    type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    annotations: {}
+    labels: {}
+    name: pvc-jackett-config
+    selector: {}
+    storage: 10Gi
+    storageClassName: null
+plex:
+  claim: claim-KuTi3vYmrzf4WNCQBVjo
+  container:
+    image: docker.io/linuxserver/plex
+    nodeSelector: {}
+    port: 32400
+  enabled: true
+  ingress:
+    annotations: {}
+    enabled: true
+    tls:
+      enabled: false
+      secretName: ''
+  replicaCount: 1
+  resources: {}
+  service:
+    extraLBService: false
+    nodePort: null
+    port: 32400
+    type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    annotations: {}
+    labels: {}
+    name: pvc-plex-config
+    selector: {}
+    storage: 100Gi
+    storageClassName: null
+radarr:
+  container:
+    image: docker.io/linuxserver/radarr
+    nodeSelector: {}
+    port: 7878
+  enabled: true
+  ingress:
+    annotations: {}
+    enabled: true
+    path: /radarr
+    tls:
+      enabled: false
+      secretName: ''
+  resources: {}
+  service:
+    extraLBService: false
+    nodePort: null
+    port: 7878
+    type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    annotations: {}
+    labels: {}
+    name: pvc-radarr-config
+    selector: {}
+    storage: 10Gi
+    storageClassName: null
+sabnzbd:
+  container:
+    image: docker.io/linuxserver/sabnzbd
+    nodeSelector: {}
+    port:
+      http: 8080
+      https: 9090
+  enabled: false
+  ingress:
+    annotations: {}
+    enabled: true
+    path: /sabnzbd
+    tls:
+      enabled: false
+      secretName: ''
+  resources: {}
+  service:
+    http:
+      extraLBService: false
+      nodePort: null
+      port: 8080
+      type: ClusterIP
+    https:
+      extraLBService: false
+      nodePort: null
+      port: 9090
+      type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    annotations: {}
+    labels: {}
+    name: pvc-sabnzbd-config
+    selector: {}
+    storage: 10Gi
+    storageClassName: null
+sonarr:
+  container:
+    image: docker.io/linuxserver/sonarr
+    nodeSelector: {}
+    port: 8989
+  enabled: true
+  ingress:
+    annotations: {}
+    enabled: true
+    path: /sonarr
+    tls:
+      enabled: false
+      secretName: ''
+  resources: {}
+  service:
+    extraLBService: false
+    nodePort: null
+    port: 8989
+    type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    name: pvc-sonarr-config
+    selector: {}
+    storage: 10Gi
+    storageClassName: null
+transmission:
+  config:
+    auth:
+      enabled: false
+      password: ''
+      username: ''
+  container:
+    image: docker.io/linuxserver/transmission
+    nodeSelector: {}
+    port:
+      peer: 51413
+      utp: 9091
+  enabled: true
+  ingress:
+    annotations: {}
+    enabled: true
+    path: /transmission
+    tls:
+      enabled: false
+      secretName: ''
+  resources: {}
+  service:
+    peer:
+      extraLBService: false
+      nodePort: null
+      nodePortUDP: null
+      port: 51413
+      type: ClusterIP
+    utp:
+      extraLBService: false
+      nodePort: null
+      port: 9091
+      type: ClusterIP
+  volume:
+    accessModes: ReadWriteOnce
+    annotations: {}
+    labels: {}
+    name: pvc-transmission-config
+    selector: {}
+    storage: 10Gi
+    storageClassName: null
+global:
+  cattle:
+    systemProjectId: p-75drw
