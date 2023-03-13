@@ -27,7 +27,6 @@ jobs:
           repo-alias: xerhab
           namespace: dev
           release: mediaserver
-          values: |
-            $(cat ./dev.values.yaml)
+          value-files: dev.values.yaml
         env:
           KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
