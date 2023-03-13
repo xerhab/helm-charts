@@ -15,7 +15,7 @@ jobs:
           ref: gh-pages
 
       - name: Deploy to Kubernetes
-        uses: deliverybot/helm@master
+        uses: glopezep/helm@v1.7.1
         with:
           chart: mediaserver
           repository: https://charts.xerktech.com
