@@ -14,6 +14,12 @@ jobs:
         run: |
           helm repo add xerktech https://charts.xerktech.com
           helm dependency update
+          
+      - name: Install aws-cli
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y python3-pip
+          sudo pip3 install awscli
 
       - name: Deploy to Kubernetes
         uses: deliverybot/helm@master
