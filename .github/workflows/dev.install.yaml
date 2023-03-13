@@ -16,7 +16,7 @@ jobs:
       
       - name: Add Helm repository
         run: |
-          helm add repo https://charts.xerktech.com
+          helm repo add https://charts.xerktech.com
           helm repo update
 
       - name: Deploy to Kubernetes
