@@ -1,0 +1,30 @@
+name: Helm Install - Dev
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: main
+      
+      - name: Update Helm repository
+        run: helm repo update
+
+      - name: Deploy to Kubernetes
+        uses: vimeda/helm@v1.6.8
+        with:
+          chart: mediaserver
+#           repository: https://charts.xerktech.com
+          namespace: dev
+          release: mediaserver
+          values: |
+            $(cat ./dev.values.yaml)
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
