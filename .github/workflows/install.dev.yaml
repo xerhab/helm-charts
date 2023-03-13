@@ -1,9 +1,9 @@
 name: Helm Install - Dev
 
 on:
-  workflow_run:
-    types: [completed]
-    workflows: ["Release Charts"]
+  push:
+    branches:
+      - gh-pages
 
 jobs:
   release:
