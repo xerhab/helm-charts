@@ -3,7 +3,7 @@ name: Helm Install - Dev
 on:
   workflow_run:
     types: [completed]
-    workflows: ["Release Charts"]
+    workflows: ["release.yaml"]
 
 jobs:
   release:
