@@ -1,23 +1,18 @@
+name: Helm Install - Dev
+
 on:
   push:
     branches:
       - gh-pages
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
-      - name: Install dependencies
-        run: |
-          helm repo add xerktech https://charts.xerktech.com
-          helm dependency update
-
-      - name: Install aws-cli
-        run: |
-          apk --no-cache add aws-cli --repository=http://dl-cdn.alpinelinux.org/alpine/v3.10/community
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
       - name: Deploy to Kubernetes
         uses: deliverybot/helm@master
@@ -28,3 +23,5 @@ jobs:
           release: mediaserver-release
           values: |
             $(cat ./dev.values.yaml)
+        env:
+          KUBECONFIG_FILE: '${{ secrets.KUBECONFIG }}'
